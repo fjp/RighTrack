@@ -47,11 +47,10 @@ public class MainActivity extends ActionBarActivity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         Fragment fragment = null;
-        SlidingTabsTodoFragment stFragment = null;
         switch (position) {
             case 0:
                 //objFragment = TodoFragment.newInstance(position + 1);
-                stFragment = new SlidingTabsTodoFragment();
+                fragment = SlidingTabsTodoFragment.newInstance(position + 1);
                 break;
             case 1:
                 fragment = HintFragment.newInstance(position + 1);
@@ -66,19 +65,9 @@ public class MainActivity extends ActionBarActivity
         }
         onSectionAttached(position);
         FragmentManager fragmentManager = getSupportFragmentManager();
-
-        if (fragment != null) {
-            fragmentManager.beginTransaction()
-                    .replace(R.id.container, fragment)
-                    .commit();
-        }
-        else {
-            fragmentManager.beginTransaction()
-                    .replace(R.id.container, stFragment)
-                    .commit();
-        }
-
-
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, fragment)
+                .commit();
     }
 
     public void onSectionAttached(int number) {
