@@ -7,6 +7,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 /**
@@ -21,6 +27,7 @@ public class TodoFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
+    private ArrayAdapter<String> mForecastAdapter;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -31,8 +38,6 @@ public class TodoFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
      * @return A new instance of fragment TodoFragment.
      */
     // TODO: Rename and change types and number of parameters
@@ -59,8 +64,77 @@ public class TodoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_todo, container, false);
+
+        // Create some dummy data for the ListView.  Here's a sample weekly forecast
+        String[] data = {
+                "Stop Thinking Too Much",
+                "Get a Job - BMW, Uni, ... Werkstudent oder Praktikum!",
+                "Eat an Apple",
+                "Komplimente geben/denken",
+                "Fri 6/27 - Foggy - 21/10",
+                "Kurzum: Wer nie fragt, kann auch nie etwas bekommen. Wer aber wagt, gewinnt gleich dreifach. Mindestens an Erfahrung.\n" +
+                        "\n" +
+                        "Fragen kostet nichts – außer Überwindung! Geh unter die kalte Dusche!",
+                "Lass die Gedanken - ausnahmslos ALLE! - das sein was sie sind! Gedanken. Lass sie kommen und gehen und grübel nicht sinnlos darüber! \n" +
+                        "Gib die Analyse, der Meinungen anderer über dich, auf! Haters gonna hate.",
+                "Fail. A Lot.\n" +
+                        "Be Polarizing (Gegensätztlich) - Be Yourself\n" +
+                        "Stop Giving A FUCK!\n" +
+                        "Do One Thing That Scares You Everyday!\n" +
+                        "GET IN TOUCH WITH PEOPLE\n" +
+                        "it developes your brain!\n" +
+                        "1) Make peace with your past\n" +
+                        "so it won't disturb your present.\n" +
+                        "2) What other people think of you\n" +
+                        "is none of your business.\n" +
+                        "3) Time heals almost everything.\n" +
+                        "Give it time.\n" +
+                        "4) No one is in charge\n" +
+                        "of your happiness. Except you.\n" +
+                        "5) Don't compare your life to others\n" +
+                        "and don't judge them, you have no idea what their jorney is all about.\n" +
+                        "6) Stop thinking too much.\n" +
+                        "Its alright not to know the answers.\n" +
+                        "They will come to you when you least expect it.\n" +
+                        "7) Smile.\n" +
+                        "You don't own all the problems in the world.\n" +
+                        "---------\n" +
+                        "8) Just start something!"
+
+        };
+        List<String> weekForecast = new ArrayList<String>(Arrays.asList(data));
+
+
+        // Now that we have some dummy forecast data, create an ArrayAdapter.
+        // The ArrayAdapter will take data from a source (like our dummy forecast) and
+        // use it to populate the ListView it's attached to.
+        mForecastAdapter =
+                new ArrayAdapter<String>(
+                        getActivity(), // The current context (this activity)
+                        R.layout.list_item_todo, // The name of the layout ID.
+                        R.id.list_item_todo_textview, // The ID of the textview to populate.
+                        weekForecast);
+
+        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+        // Get a reference to the ListView, and attach this adapter to it.
+        ListView listView = (ListView) rootView.findViewById(R.id.listview_todo);
+        listView.setAdapter(mForecastAdapter);
+
+// on item clicked handler
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+
+//            @Override
+//            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+//                String forecast = mForecastAdapter.getItem(position);
+//                Intent intent = new Intent(getActivity(), DetailActivity.class)
+//                        .putExtra(Intent.EXTRA_TEXT, forecast);
+//                startActivity(intent);
+//            }
+//        });
+
+        return rootView;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

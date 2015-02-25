@@ -109,7 +109,7 @@ public class SlidingTabsTodoFragment extends Fragment {
             Fragment fragment = null;
             switch (position) {
                 case 0:
-                    fragment = MindSetFragment.newInstance(position);
+                    fragment = TodoFragment.newInstance(position);
                     break;
                 case 1:
                     fragment = HintFragment.newInstance(position);
