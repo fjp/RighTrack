@@ -1,18 +1,23 @@
 package at.fjp.rightrack;
 
 import android.app.Activity;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 
 /**
@@ -27,7 +32,12 @@ public class TodoFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
+    private final String LOG_TAG = TodoFragment.class.getSimpleName();
     private ArrayAdapter<String> mForecastAdapter;
+    private static Context mContext = null;
+
+    private ListView myList;
+    private MyAdapter myAdapter;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -41,8 +51,9 @@ public class TodoFragment extends Fragment {
      * @return A new instance of fragment TodoFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static TodoFragment newInstance(int sectionNumber) {
+    public static TodoFragment newInstance(int sectionNumber, Context context) {
         TodoFragment fragment = new TodoFragment();
+        mContext = context;
         Bundle args = new Bundle();
         args.putInt(ARG_PARAM1, sectionNumber);
         fragment.setArguments(args);
@@ -59,13 +70,114 @@ public class TodoFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
         }
+
+        setHasOptionsMenu(true);
+    }
+
+    /**
+     *
+     * @param menu
+     * @param inflater
+     * Displays menu for todo fragment, including add option
+     */
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        inflater.inflate(R.menu.todo, menu);
+    }
+
+    public ArrayList myItems = new ArrayList();
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle item selection
+        switch (item.getItemId()) {
+            case R.id.action_add_todo:
+                ListItem listItem = new ListItem();
+                listItem.caption = "Added Todo";
+                myItems.add(listItem);
+                Log.v(LOG_TAG, "Added Todo");
+                myAdapter.notifyDataSetChanged();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    public class MyAdapter extends BaseAdapter {
+        private LayoutInflater mInflater;
+
+
+        public MyAdapter() {
+            mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+            for (int i = 0; i < 3; i++) {
+                ListItem listItem = new ListItem();
+                listItem.caption = "Caption" + i;
+                myItems.add(listItem);
+            }
+
+            notifyDataSetChanged();
+        }
+
+        public int getCount() {
+            return myItems.size();
+        }
+
+        public Object getItem(int position) {
+            return position;
+        }
+
+        public long getItemId(int position) {
+            return position;
+        }
+
+        public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder holder;
+            if (convertView == null) {
+                holder = new ViewHolder();
+                convertView = mInflater.inflate(R.layout.list_item_todo, null);
+                holder.caption = (EditText) convertView
+                        .findViewById(R.id.list_item_todo_edit_text);
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+            //Fill EditText with the value you have in data source
+            ListItem item = (ListItem) myItems.get(position);
+            holder.caption.setText(item.caption);
+            holder.caption.setId(position);
+
+            //we need to update adapter once we finish with editing
+            holder.caption.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (!hasFocus){
+                        final int position = v.getId();
+                        final EditText Caption = (EditText) v;
+                        ListItem item = (ListItem) myItems.get(position);
+                        item.caption = Caption.getText().toString();
+                    }
+                }
+            });
+
+            return convertView;
+        }
+    }
+
+    class ViewHolder {
+        EditText caption;
+    }
+
+    class ListItem {
+        String caption;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        // Create some dummy data for the ListView.  Here's a sample weekly forecast
+        /* Create some dummy data for the ListView.  Here's a sample weekly forecast
         String[] data = {
                 "Stop Thinking Too Much",
                 "Get a Job - BMW, Uni, ... Werkstudent oder Praktikum!",
@@ -102,46 +214,17 @@ public class TodoFragment extends Fragment {
                         "8) Just start something!"
 
         };
-        List<String> weekForecast = new ArrayList<String>(Arrays.asList(data));
+        */
 
-
-        // Now that we have some dummy forecast data, create an ArrayAdapter.
-        // The ArrayAdapter will take data from a source (like our dummy forecast) and
-        // use it to populate the ListView it's attached to.
-        mForecastAdapter =
-                new ArrayAdapter<String>(
-                        getActivity(), // The current context (this activity)
-                        R.layout.list_item_todo, // The name of the layout ID.
-                        R.id.list_item_todo_textview, // The ID of the textview to populate.
-                        weekForecast);
-
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_todo, container, false);
 
         // Get a reference to the ListView, and attach this adapter to it.
-        ListView listView = (ListView) rootView.findViewById(R.id.listview_todo);
-        listView.setAdapter(mForecastAdapter);
-
-// on item clicked handler
-//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-
-//            @Override
-//            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-//                String forecast = mForecastAdapter.getItem(position);
-//                Intent intent = new Intent(getActivity(), DetailActivity.class)
-//                        .putExtra(Intent.EXTRA_TEXT, forecast);
-//                startActivity(intent);
-//            }
-//        });
+        myList = (ListView) rootView.findViewById(R.id.listview_todo);
+        myList.setItemsCanFocus(true);
+        myAdapter = new MyAdapter();
+        myList.setAdapter(myAdapter);
 
         return rootView;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
     }
 
     @Override

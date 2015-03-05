@@ -16,12 +16,15 @@
 
 package at.fjp.rightrack;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -34,6 +37,7 @@ public class SlidingTabsTodoFragment extends Fragment {
 
     static final String LOG_TAG = "SlidingTabsBasicFragment";
     private static final String ARG_PARAM1 = "param1";
+    private static Context mContext;
 
     /**
      * A custom {@link android.support.v4.view.ViewPager} title strip which looks much like Tabs present in Android v4.0 and
@@ -47,14 +51,29 @@ public class SlidingTabsTodoFragment extends Fragment {
     private ViewPager mViewPager;
 
 
-    public static SlidingTabsTodoFragment newInstance(int sectionNumber) {
+    public static SlidingTabsTodoFragment newInstance(int sectionNumber, Context context) {
         SlidingTabsTodoFragment fragment = new SlidingTabsTodoFragment();
+        mContext = context;
         Bundle args = new Bundle();
         args.putInt(ARG_PARAM1, sectionNumber);
         fragment.setArguments(args);
         return fragment;
     }
-    
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        setHasOptionsMenu(true);
+    }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.main, menu);
+    }
 
     /**
      * Inflates the {@link android.view.View} which will be displayed by this {@link android.support.v4.app.Fragment}, from the app's
@@ -64,6 +83,8 @@ public class SlidingTabsTodoFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_sliding_tabs_todo, container, false);
+
+
     }
 
     // BEGIN_INCLUDE (fragment_onviewcreated)
@@ -109,10 +130,10 @@ public class SlidingTabsTodoFragment extends Fragment {
             Fragment fragment = null;
             switch (position) {
                 case 0:
-                    fragment = TodoFragment.newInstance(position);
+                    fragment = TodoFragment.newInstance(position, mContext);
                     break;
                 case 1:
-                    fragment = HintFragment.newInstance(position);
+                    fragment = MotivationFragment.newInstance(position);
                     break;
             }
             return fragment;

@@ -49,8 +49,7 @@ public class MainActivity extends ActionBarActivity
         Fragment fragment = null;
         switch (position) {
             case 0:
-                //objFragment = TodoFragment.newInstance(position + 1);
-                fragment = SlidingTabsTodoFragment.newInstance(position + 1);
+                fragment = SlidingTabsTodoFragment.newInstance(position + 1, this);
                 break;
             case 1:
                 fragment = HintFragment.newInstance(position + 1);
@@ -68,6 +67,7 @@ public class MainActivity extends ActionBarActivity
         fragmentManager.beginTransaction()
                 .replace(R.id.container, fragment)
                 .commit();
+
     }
 
     public void onSectionAttached(int number) {
@@ -106,6 +106,7 @@ public class MainActivity extends ActionBarActivity
             return true;
         }
         return super.onCreateOptionsMenu(menu);
+
     }
 
     @Override
@@ -151,7 +152,7 @@ public class MainActivity extends ActionBarActivity
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            View rootView = inflater.inflate(R.layout.fragment_todo, container, false);
             return rootView;
         }
 
