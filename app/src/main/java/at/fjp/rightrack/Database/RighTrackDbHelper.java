@@ -42,18 +42,18 @@ public class RighTrackDbHelper extends SQLiteOpenHelper {
         // priority level
         final String SQL_CREATE_PRIORITY_TABLE = "CREATE TABLE " + PriorityEntry.TABLE_NAME + " (" +
                 PriorityEntry._ID + " INTEGER PRIMARY KEY," +
-                PriorityEntry.COLUMN_PRIORITY_LEVEL + " TEXT UNIQUE NOT NULL, " +
-                " );";
+                PriorityEntry.COLUMN_PRIORITY_LEVEL + " TEXT UNIQUE NOT NULL" +
+                ");";
 
         // Create a table to hold recurrence.  A recurrence consists of the string supplied in the
         // recurrence
         final String SQL_CREATE_RECURRENCE_TABLE = "CREATE TABLE " + RecurrenceEntry.TABLE_NAME + " (" +
                 RecurrenceEntry._ID + " INTEGER PRIMARY KEY," +
-                RecurrenceEntry.COLUMN_RECURRENCE + " TEXT UNIQUE NOT NULL, " +
-                " );";
+                RecurrenceEntry.COLUMN_RECURRENCE + " TEXT UNIQUE NOT NULL" +
+                ");";
 
 
-        final String SQL_CREATE_WEATHER_TABLE = "CREATE TABLE " + RighTrackContract.TodoEntry.TABLE_NAME + " (" +
+        final String SQL_CREATE_TODO_TABLE = "CREATE TABLE " + RighTrackContract.TodoEntry.TABLE_NAME + " (" +
                 // Why AutoIncrement here, and not above?
                 // Unique keys will be auto-generated in either case.  But for weather
                 // forecasting, it's reasonable to assume the user will want information
@@ -83,7 +83,7 @@ public class RighTrackDbHelper extends SQLiteOpenHelper {
 
         sqLiteDatabase.execSQL(SQL_CREATE_PRIORITY_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_RECURRENCE_TABLE);
-        sqLiteDatabase.execSQL(SQL_CREATE_WEATHER_TABLE);
+        sqLiteDatabase.execSQL(SQL_CREATE_TODO_TABLE);
     }
 
     @Override

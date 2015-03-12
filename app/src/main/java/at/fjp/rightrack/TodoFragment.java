@@ -1,7 +1,10 @@
 package at.fjp.rightrack;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,12 +15,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+
+import at.fjp.rightrack.Database.RighTrackContract;
+import at.fjp.rightrack.Database.RighTrackDbHelper;
 
 
 /**
@@ -33,11 +38,11 @@ public class TodoFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private final String LOG_TAG = TodoFragment.class.getSimpleName();
-    private ArrayAdapter<String> mForecastAdapter;
     private static Context mContext = null;
 
     private ListView myList;
     private MyAdapter myAdapter;
+    private RighTrackDbHelper mRTDbHelper;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -70,6 +75,59 @@ public class TodoFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
         }
+
+        mRTDbHelper = new RighTrackDbHelper(mContext);
+
+        // Gets the data repository in write mode
+        SQLiteDatabase db = mRTDbHelper.getWritableDatabase();
+
+        Log.v(LOG_TAG, "onCreate: Database is open: " + db.isOpen());
+
+        // Create a new map of values, where column names are the keys
+        int id = 0;
+        String title = "Prio1";
+        ContentValues values = new ContentValues();
+        values.put(RighTrackContract.PriorityEntry._ID, id);
+        values.put(RighTrackContract.PriorityEntry.COLUMN_PRIORITY_LEVEL, title);
+
+        // Insert the new row, returning the primary key value of the new row
+        long newRowId;
+        newRowId = db.insert(
+                RighTrackContract.PriorityEntry.TABLE_NAME,
+                null,
+                values);
+
+        Log.v(LOG_TAG, "onCreate: Written to Database");
+
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {
+                RighTrackContract.PriorityEntry._ID,
+                RighTrackContract.PriorityEntry.COLUMN_PRIORITY_LEVEL,
+        };
+
+// How you want the results sorted in the resulting Cursor
+        String sortOrder =
+                RighTrackContract.PriorityEntry.COLUMN_PRIORITY_LEVEL + " DESC";
+
+        Cursor c = db.query(
+                RighTrackContract.PriorityEntry.TABLE_NAME,  // The table to query
+                projection,                               // The columns to return
+                null,                                // The columns for the WHERE clause
+                null,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                sortOrder                                 // The sort order
+        );
+
+
+        c.moveToFirst();
+        String itemString = c.getString(
+                c.getColumnIndexOrThrow(RighTrackContract.PriorityEntry.COLUMN_PRIORITY_LEVEL)
+        );
+
+        Log.v(LOG_TAG, "RESULT: " + itemString);
+
 
         setHasOptionsMenu(true);
     }
