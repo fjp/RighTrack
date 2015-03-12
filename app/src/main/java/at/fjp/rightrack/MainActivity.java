@@ -14,9 +14,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import at.fjp.rightrack.SlidingTabs.SlidingTabsTodoFragment;
+
 
 public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks, TodoFragment.OnFragmentInteractionListener, HintFragment.OnFragmentInteractionListener, MindSetFragment.OnFragmentInteractionListener, MotivationFragment.OnFragmentInteractionListener {
+        implements NavigationDrawerFragment.NavigationDrawerCallbacks, SlidingTabsTodoFragment.OnFragmentInteractionListener,
+        TodoFragment.OnFragmentInteractionListener,
+        HintFragment.OnFragmentInteractionListener,
+        MindSetFragment.OnFragmentInteractionListener,
+        MotivationFragment.OnFragmentInteractionListener {
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -55,7 +61,7 @@ public class MainActivity extends ActionBarActivity
                 fragment = HintFragment.newInstance(position + 1);
                 break;
             case 2:
-                fragment = MindSetFragment.newInstance(position + 1);
+                fragment = SlidingTabsTodoFragment.newInstance(position + 1, this);
                 break;
             case 3:
                 fragment = MotivationFragment.newInstance(position + 1);

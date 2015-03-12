@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package at.fjp.rightrack;
+package at.fjp.rightrack.SlidingTabs;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -27,6 +28,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import at.fjp.rightrack.MotivationFragment;
+import at.fjp.rightrack.R;
+import at.fjp.rightrack.TodoFragment;
 
 /**
  * A basic sample
@@ -102,20 +107,22 @@ public class SlidingTabsTodoFragment extends Fragment {
         // BEGIN_INCLUDE (setup_viewpager)
         // Get the ViewPager and set it's PagerAdapter so that it can display items
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
-        mViewPager.setAdapter(new MyAdapter(getFragmentManager()));
+        mViewPager.setAdapter(new MyAdapter(getChildFragmentManager()));
         // END_INCLUDE (setup_viewpager)
 
         // BEGIN_INCLUDE (setup_slidingtablayout)
         // Give the SlidingTabLayout the ViewPager, this must be done AFTER the ViewPager has had
         // it's PagerAdapter set.
         mSlidingTabLayout = (SlidingTabLayout) view.findViewById(R.id.sliding_tabs);
+        // Center the tabs in the layout
+        mSlidingTabLayout.setDistributeEvenly(true);
         mSlidingTabLayout.setViewPager(mViewPager);
         // END_INCLUDE (setup_slidingtablayout)
     }
     // END_INCLUDE (fragment_onviewcreated)
 
 
-    public static class MyAdapter extends FragmentStatePagerAdapter {
+    public class MyAdapter extends FragmentStatePagerAdapter {
         public MyAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -161,5 +168,10 @@ public class SlidingTabsTodoFragment extends Fragment {
             return pageTitle;
             //return "Item " + (position + 1);
         }
+    }
+
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        public void onFragmentInteraction(Uri uri);
     }
 }
