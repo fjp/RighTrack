@@ -17,6 +17,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <provider
+            android:authorities="at.fjp.rightrack"
+            android:name=".Database.RighTrackProvider" />
     </application>
 
 </manifest>

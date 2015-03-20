@@ -68,7 +68,7 @@ public class RighTrackContract {
     public static final class RecurrenceEntry implements BaseColumns {
         public static final String TABLE_NAME = "recurrence";
 
-        public static final String COLUMN_RECURRENCE = "priority_level";
+        public static final String COLUMN_RECURRENCE = "recurrence";
 
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_RECURRENCE).build();
