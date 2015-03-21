@@ -15,7 +15,7 @@ public class RighTrackContract {
     // relationship between a domain name and its website.  A convenient string to use for the
     // content authority is the package name for the app, which is guaranteed to be unique on the
     // device.
-    public static final String CONTENT_AUTHORITY = "at.fjp.rightrack.app";
+    public static final String CONTENT_AUTHORITY = "at.fjp.rightrack";
 
     // Use CONTENT_AUTHORITY to create the base of all URI's which apps will use to contact
     // the content provider.
@@ -68,7 +68,7 @@ public class RighTrackContract {
     public static final class RecurrenceEntry implements BaseColumns {
         public static final String TABLE_NAME = "recurrence";
 
-        public static final String COLUMN_RECURRENCE = "recurrence";
+        public static final String COLUMN_RECURRENCE = "recurrence_level";
 
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_RECURRENCE).build();

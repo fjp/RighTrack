@@ -18,22 +18,27 @@ package at.fjp.rightrack.Database;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import at.fjp.rightrack.Database.RighTrackContract.PriorityEntry;
 import at.fjp.rightrack.Database.RighTrackContract.RecurrenceEntry;
+import at.fjp.rightrack.TodoFragment;
 
 /**
  * Manages a local database for rightrack data.
  */
 public class RighTrackDbHelper extends SQLiteOpenHelper {
 
+    private final String LOG_TAG = TodoFragment.class.getSimpleName() + " BUG ";
+
     // If you change the database schema, you must increment the database version.
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 6;
 
     static final String DATABASE_NAME = "rightrack.db";
 
     public RighTrackDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        Log.v(LOG_TAG, "RighTrackDbHelper");
     }
 
     @Override
@@ -52,6 +57,8 @@ public class RighTrackDbHelper extends SQLiteOpenHelper {
                 RecurrenceEntry.COLUMN_RECURRENCE + " TEXT UNIQUE NOT NULL" +
                 ");";
 
+        Log.v(LOG_TAG, "onCreate" + "SQL CREATE RECURRENCE TABLE");
+
 
         final String SQL_CREATE_TODO_TABLE = "CREATE TABLE " + RighTrackContract.TodoEntry.TABLE_NAME + " (" +
                 // Why AutoIncrement here, and not above?
@@ -65,7 +72,7 @@ public class RighTrackDbHelper extends SQLiteOpenHelper {
                 RighTrackContract.TodoEntry.COLUMN_PRIO_KEY + " INTEGER NOT NULL, " +
                 RighTrackContract.TodoEntry.COLUMN_REC_KEY + " INTEGER NOT NULL, " +
                 RighTrackContract.TodoEntry.COLUMN_DATE + " INTEGER NOT NULL, " +
-                RighTrackContract.TodoEntry.COLUMN_DUE_DATE + " INTEGER NOT NULL, " +
+                RighTrackContract.TodoEntry.COLUMN_DUE_DATE + " INTEGER, " +
                 RighTrackContract.TodoEntry.COLUMN_TODO + " TEXT NOT NULL, " +
 
                 // Set up the priority column as a foreign key to priority table.
@@ -74,7 +81,7 @@ public class RighTrackDbHelper extends SQLiteOpenHelper {
 
                 // Set up the recurrence column as a foreign key to recurrence table.
                 " FOREIGN KEY (" + RighTrackContract.TodoEntry.COLUMN_REC_KEY + ") REFERENCES " +
-                RighTrackContract.TodoEntry.TABLE_NAME + " (" + RighTrackContract.TodoEntry._ID + "));";
+                RighTrackContract.TodoEntry.TABLE_NAME + " (" + RighTrackContract.TodoEntry._ID + ") );";
 
                 // To assure the application have just one weather entry per day
                 // per location, it's created a UNIQUE constraint with REPLACE strategy
@@ -95,9 +102,9 @@ public class RighTrackDbHelper extends SQLiteOpenHelper {
         // If you want to update the schema without wiping data, commenting out the next 2 lines
         // should be your top priority before modifying this method.
 
-        //sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + RighTrackContract.PriorityEntry.TABLE_NAME);
-        //sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + RighTrackContract.RecurrenceEntry.TABLE_NAME);
-        //sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + RighTrackContract.TodoEntry.TABLE_NAME);
-        //onCreate(sqLiteDatabase);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + RighTrackContract.PriorityEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + RighTrackContract.RecurrenceEntry.TABLE_NAME);
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + RighTrackContract.TodoEntry.TABLE_NAME);
+        onCreate(sqLiteDatabase);
     }
 }
