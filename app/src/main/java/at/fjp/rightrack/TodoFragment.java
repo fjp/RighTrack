@@ -7,15 +7,18 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -36,7 +39,7 @@ public class TodoFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
-    private final String LOG_TAG = TodoFragment.class.getSimpleName();
+    private static final String LOG_TAG = TodoFragment.class.getSimpleName();
     private static Context mContext = null;
 
     private ListView myList;
@@ -62,6 +65,7 @@ public class TodoFragment extends Fragment {
         args.putInt(ARG_PARAM1, sectionNumber);
         fragment.setArguments(args);
         mTodoData = new TodoData(mContext);
+        Log.v(LOG_TAG, "newInstance TodoFragment");
         return fragment;
     }
 
@@ -177,7 +181,7 @@ public class TodoFragment extends Fragment {
         }
 
         public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder;
+            final ViewHolder holder;
             if (convertView == null) {
                 holder = new ViewHolder();
                 convertView = mInflater.inflate(R.layout.list_item_todo, null);
@@ -191,6 +195,24 @@ public class TodoFragment extends Fragment {
             ListItem item = (ListItem) myItems.get(position);
             holder.caption.setText(item.caption);
             holder.caption.setId(position);
+
+            holder.caption.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                String oldTodoText = holder.caption.getText().toString();
+
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    boolean handled = false;
+                    Log.v(LOG_TAG, "oldText: " + oldTodoText);
+                    EditText et = (EditText) v;
+                    String newTodoText = et.getText().toString();
+                    Log.v(LOG_TAG, "newText: " + newTodoText);
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        mTodoData.updateTodo(oldTodoText, newTodoText);
+                        handled = true;
+                    }
+                    return handled;
+                }
+            });
 
             //we need to update adapter once we finish with editing
             holder.caption.setOnFocusChangeListener(new View.OnFocusChangeListener() {

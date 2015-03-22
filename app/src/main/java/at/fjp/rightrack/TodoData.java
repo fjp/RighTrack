@@ -226,4 +226,16 @@ public class TodoData {
         SimpleDateFormat format = new SimpleDateFormat("E, MMM d");
         return format.format(date).toString();
     }
+
+    public void updateTodo(String oldTodoText, String newTodoText) {
+        ContentValues todoValues = new ContentValues();
+
+        todoValues.put(RighTrackContract.TodoEntry.COLUMN_TODO, newTodoText);
+
+        mContext.getContentResolver().update(
+                RighTrackContract.TodoEntry.CONTENT_URI,
+                todoValues,
+                RighTrackContract.TodoEntry.COLUMN_TODO + " = ?",
+                new String[]{oldTodoText});
+    }
 }
