@@ -40,6 +40,10 @@ public class MotivationFragment extends Fragment {
         Bundle args = new Bundle();
         args.putInt(ARG_PARAM1, sectionNumber);
         fragment.setArguments(args);
+
+
+
+
         return fragment;
     }
 

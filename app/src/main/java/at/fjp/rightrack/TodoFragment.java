@@ -1,26 +1,21 @@
 package at.fjp.rightrack;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
-import android.widget.BaseAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
-
-import java.util.ArrayList;
+import android.widget.SimpleCursorAdapter;
 
 import at.fjp.rightrack.Database.RighTrackContract;
 
@@ -42,9 +37,24 @@ public class TodoFragment extends Fragment {
     private static final String LOG_TAG = TodoFragment.class.getSimpleName();
     private static Context mContext = null;
 
-    private ListView myList;
-    private MyAdapter myAdapter;
     private static TodoData mTodoData;
+    private TodoDialogAdd mTodoDialogAdd;
+
+    // For the SimpleCursorAdapter to match the UserDictionary columns to layout items.
+    private static final String[] COLUMNS_TO_BE_BOUND  = new String[] {
+            RighTrackContract.TodoEntry.COLUMN_TODO,
+            RighTrackContract.TodoEntry.COLUMN_REC_KEY
+    };
+
+    private static final int[] LAYOUT_ITEMS_TO_FILL = new int[] {
+            android.R.id.text1,
+            android.R.id.text2
+    };
+
+
+    private ListView mListView;
+    private SimpleCursorAdapter mAdapter;
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -81,8 +91,6 @@ public class TodoFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
         }
 
-
-
         setHasOptionsMenu(true);
     }
 
@@ -99,144 +107,24 @@ public class TodoFragment extends Fragment {
         inflater.inflate(R.menu.todo, menu);
     }
 
-    public ArrayList myItems = new ArrayList();
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // handle item selection
         switch (item.getItemId()) {
             case R.id.action_add_todo:
-                ListItem listItem = new ListItem();
-                listItem.caption = "Added Todo";
-                myItems.add(listItem);
+                mTodoDialogAdd = new TodoDialogAdd();
+                mTodoDialogAdd.show(getFragmentManager(), "addtodo");
+
+
                 Log.v(LOG_TAG, "Added Todo");
-                myAdapter.notifyDataSetChanged();
+                mAdapter.notifyDataSetChanged();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    public class MyAdapter extends BaseAdapter {
-        private LayoutInflater mInflater;
-
-
-        public MyAdapter() {
-            mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-
-            long todoId;
-
-            // First, check if the todo name exists in the db
-            Cursor todoCursor = mContext.getContentResolver().query(
-                    RighTrackContract.TodoEntry.CONTENT_URI,
-                    null,
-                    null,
-                    null,
-                    null);
-
-            int curCount = todoCursor.getCount();
-
-            String currCount = String.valueOf(curCount);
-            Log.v("curLen", currCount);
-
-
-            if (todoCursor.moveToFirst()) {
-                for (int i = 0; i < curCount; i++) {
-                    int todoIndex = todoCursor.getColumnIndex(RighTrackContract.TodoEntry.COLUMN_TODO);
-                    String currentTodo = todoCursor.getString(todoIndex);
-
-                    ListItem listItem = new ListItem();
-                    listItem.caption = currentTodo;
-                    myItems.add(listItem);
-
-                    todoCursor.moveToNext();
-                }
-            }
-
-//            if (todoCursor.moveToFirst()) {
-//                int todoIdIndex = todoCursor.getColumnIndex(RighTrackContract.TodoEntry._ID);
-//                todoId = todoCursor.getLong(todoIdIndex);
-//            }
-//
-//            for (int i = 0; i < 3; i++) {
-//                ListItem listItem = new ListItem();
-//                listItem.caption = "Caption" + i;
-//                myItems.add(listItem);
-//            }
-
-            notifyDataSetChanged();
-        }
-
-        public int getCount() {
-            return myItems.size();
-        }
-
-        public Object getItem(int position) {
-            return position;
-        }
-
-        public long getItemId(int position) {
-            return position;
-        }
-
-        public View getView(int position, View convertView, ViewGroup parent) {
-            final ViewHolder holder;
-            if (convertView == null) {
-                holder = new ViewHolder();
-                convertView = mInflater.inflate(R.layout.list_item_todo, null);
-                holder.caption = (EditText) convertView
-                        .findViewById(R.id.list_item_todo_edit_text);
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-            //Fill EditText with the value you have in data source
-            ListItem item = (ListItem) myItems.get(position);
-            holder.caption.setText(item.caption);
-            holder.caption.setId(position);
-
-            holder.caption.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                String oldTodoText = holder.caption.getText().toString();
-
-                @Override
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    boolean handled = false;
-                    Log.v(LOG_TAG, "oldText: " + oldTodoText);
-                    EditText et = (EditText) v;
-                    String newTodoText = et.getText().toString();
-                    Log.v(LOG_TAG, "newText: " + newTodoText);
-                    if (actionId == EditorInfo.IME_ACTION_DONE) {
-                        mTodoData.updateTodo(oldTodoText, newTodoText);
-                        handled = true;
-                    }
-                    return handled;
-                }
-            });
-
-            //we need to update adapter once we finish with editing
-            holder.caption.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                public void onFocusChange(View v, boolean hasFocus) {
-                    if (!hasFocus){
-                        final int position = v.getId();
-                        final EditText Caption = (EditText) v;
-                        ListItem item = (ListItem) myItems.get(position);
-                        item.caption = Caption.getText().toString();
-                    }
-                }
-            });
-
-            return convertView;
-        }
-    }
-
-    class ViewHolder {
-        EditText caption;
-    }
-
-    class ListItem {
-        String caption;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -245,11 +133,25 @@ public class TodoFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_todo, container, false);
 
-        // Get a reference to the ListView, and attach this adapter to it.
-        myList = (ListView) rootView.findViewById(R.id.listview_todo);
-        myList.setItemsCanFocus(true);
-        myAdapter = new MyAdapter();
-        myList.setAdapter(myAdapter);
+        // Get the TextView which will be populated with the Dictionary ContentProvider data.
+        mListView = (ListView) rootView.findViewById(R.id.listview_todo);
+
+        // Get the ContentResolver which will send a message to the ContentProvider.
+        ContentResolver resolver = mContext.getContentResolver();
+
+        // Get a Cursor containing all of the rows in the Words table.
+        Cursor cursor = resolver.query(RighTrackContract.TodoEntry.CONTENT_URI, null, null, null, null);
+
+        // Set the Adapter to fill the standard two_line_list_item layout with data from the Cursor.
+        mAdapter = new SimpleCursorAdapter(mContext,
+                android.R.layout.two_line_list_item,
+                cursor,
+                COLUMNS_TO_BE_BOUND,
+                LAYOUT_ITEMS_TO_FILL,
+                0);
+
+        // Attach the adapter to the ListView.
+        mListView.setAdapter(mAdapter);
 
         return rootView;
     }
