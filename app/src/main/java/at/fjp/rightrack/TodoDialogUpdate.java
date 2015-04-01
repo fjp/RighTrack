@@ -7,24 +7,30 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-
-
-
+import android.view.View;
+import android.widget.EditText;
 
 
 /**
  * Todo Dialog
  */
-public class TodoDialogAdd extends DialogFragment {
+public class TodoDialogUpdate extends DialogFragment {
     private static final String LOG_TAG = TodoFragment.class.getSimpleName();
+    private static final String ARG_PARAM1 = "param1";
 
-    public static TodoDialogAdd newInstance() {
-        TodoDialogAdd dialogUpdate = new TodoDialogAdd();
+    private static String mCurrentTodo;
 
+
+    public static TodoDialogUpdate newInstance(String currentTodo) {
+        TodoDialogUpdate dialogUpdate = new TodoDialogUpdate();
+        Bundle args = new Bundle();
+        mCurrentTodo = currentTodo;
+        args.putString(ARG_PARAM1, mCurrentTodo);
+        dialogUpdate.setArguments(args);
         return dialogUpdate;
     }
 
-    public TodoDialogAdd() {
+    public TodoDialogUpdate() {
         // Required empty public constructor
     }
 
@@ -35,7 +41,7 @@ public class TodoDialogAdd extends DialogFragment {
         // The dialog fragment receives a reference to this Activity through the
         // Fragment.onAttach() callback, which it uses to call the following methods
         // defined by the NoticeDialogFragment.NoticeDialogListener interface
-        void onDialogAddClick(DialogFragment dialog);
+        void onDialogUpdateClick(DialogFragment dialog);
 
         void onDialogNegativeClick(DialogFragment dialog);
     }
@@ -55,22 +61,6 @@ public class TodoDialogAdd extends DialogFragment {
         }
     }
 
-    /* Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        // Verify that the host activity implements the callback interface
-        try {
-            // Instantiate the NoticeDialogListener so we can send events to the host
-            mListener = (NoticeDialogListener) activity;
-        } catch (ClassCastException e) {
-            // The activity doesn't implement the interface, throw exception
-            throw new ClassCastException(activity.toString()
-                    + " must implement NoticeDialogListener");
-        }
-    }
-    */
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -81,25 +71,38 @@ public class TodoDialogAdd extends DialogFragment {
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        builder.setView(inflater.inflate(R.layout.dialog_todo_add, null));
+        View dialogView = inflater.inflate(R.layout.dialog_todo_add, null);
+        builder.setView(dialogView);
 
-        builder.setMessage(R.string.dialog_add_todo)
+        EditText editText = (EditText) dialogView.findViewById(R.id.todo);
+        editText.setText(mCurrentTodo);
 
-                .setPositiveButton(R.string.action_add_todo, new DialogInterface.OnClickListener() {
+        builder.setMessage(R.string.dialog_update_todo)
+
+                .setPositiveButton(R.string.action_update_todo, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
 
                         Log.v(LOG_TAG, "PositiveButton");
-                        mListener.onDialogAddClick(TodoDialogAdd.this);
+                        mListener.onDialogUpdateClick(TodoDialogUpdate.this);
 
                     }
                 })
                 .setNegativeButton(R.string.action_cancel_todo, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        mListener.onDialogNegativeClick(TodoDialogAdd.this);
+                        mListener.onDialogNegativeClick(TodoDialogUpdate.this);
                         Log.v(LOG_TAG, "NegativeButton");
                     }
                 });
+
+
+
         // Create the AlertDialog object and return it
         return builder.create();
     }
+
+//    @Override
+//    public void onStart() {
+//        EditText editText = (EditText) getDialog().findViewById(R.id.todo);
+//        editText.setText(mCurrentTodo);
+//    }
 }

@@ -35,7 +35,8 @@ import at.fjp.rightrack.Database.RighTrackContract;
 
 
 
-public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogClickListener {
+public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogClickListener,
+ TodoDialogUpdate.TodoDialogClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -46,6 +47,8 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
 
     private static TodoData mTodoData;
     private TodoDialogAdd mTodoDialogAdd;
+    private TodoDialogUpdate mTodoDialogUpdate;
+    private String mSelectedTodo;
 
     // For the SimpleCursorAdapter to match the UserDictionary columns to layout items.
     private static final String[] COLUMNS_TO_BE_BOUND  = new String[] {
@@ -123,7 +126,7 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
         switch (item.getItemId()) {
             case R.id.action_add_todo:
 
-                showTodoDialog();
+                showTodoDialogAdd();
                 Log.v(LOG_TAG, "Added Todo");
                 mAdapter.notifyDataSetChanged();
                 return true;
@@ -132,10 +135,16 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
         }
     }
 
-    private void showTodoDialog() {
-        mTodoDialogAdd = new TodoDialogAdd();
-        mTodoDialogAdd.setTargetFragment(this, 0);
-        mTodoDialogAdd.show(getFragmentManager(), "addtodo");
+    private void showTodoDialogAdd() {
+        mTodoDialogAdd = TodoDialogAdd.newInstance();
+        mTodoDialogAdd.setTargetFragment(this, 0); //todo move to dialog class
+        mTodoDialogAdd.show(getFragmentManager(), "addTodo");
+    }
+
+    private void showTodoDialogUpdate(String currentTodo) {
+        mTodoDialogUpdate = TodoDialogUpdate.newInstance(currentTodo);
+        mTodoDialogUpdate.setTargetFragment(this, 0); //todo move to dialog class
+        mTodoDialogUpdate.show(getFragmentManager(), "updateTodo");
     }
 
 
@@ -189,7 +198,7 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
     // Fragment.onAttach() callback, which it uses to call the following methods
     // defined by the NoticeDialogFragment.NoticeDialogListener interface
     @Override
-    public void onDialogPositiveClick(DialogFragment dialog) {
+    public void onDialogAddClick(DialogFragment dialog) {
 
         // User touched the dialog's positive button
         EditText editTextTodo = (EditText) dialog.getDialog().findViewById(R.id.todo);
@@ -206,6 +215,21 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
 
     private void updateDataSet() {
         mAdapter.changeCursor(mTodoData.getCursor());
+    }
+
+    @Override
+    public void onDialogUpdateClick(DialogFragment dialog) {
+        // User touched the dialog's update button
+        EditText editTextTodo = (EditText) dialog.getDialog().findViewById(R.id.todo);
+        String newTodo = editTextTodo.getText().toString();
+
+        Log.v(LOG_TAG, "onDialogUpdateClick " + "oldTodo: " + mSelectedTodo + " newTodo: " + newTodo);
+
+        // save new _todo in database
+        mTodoData.updateTodo(mSelectedTodo, newTodo);
+
+        // Update the DataSet
+        updateDataSet();
     }
 
     @Override
@@ -273,17 +297,17 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
             Log.v(LOG_TAG, "onActionItemClicked ID " + cursor);
 
             // Get _Todo String from _TodoColumn = 5
-            String todo = cursor.getString(5).toString();
+            mSelectedTodo = cursor.getString(5).toString();
 
-            Log.v(LOG_TAG, "onActionItemClicked " + todo);
+            Log.v(LOG_TAG, "onActionItemClicked " + mSelectedTodo);
 
             switch (item.getItemId()) {
                 case R.id.action_edit_todo:
-                    //shareCurrentItem();
+                    showTodoDialogUpdate(mSelectedTodo);
                     mode.finish(); // Action picked, so close the CAB
                     return true;
                 case R.id.action_delete_todo:
-                    mTodoData.deleteTodo(todo);
+                    mTodoData.deleteTodo(mSelectedTodo);
                     updateDataSet();
                     mode.finish(); // Action picked, so close the CAB
                     return true;
