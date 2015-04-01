@@ -1,11 +1,11 @@
 package at.fjp.rightrack;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,12 +14,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 import at.fjp.rightrack.Database.RighTrackContract;
 
-;
 
 
 /**
@@ -30,7 +30,10 @@ import at.fjp.rightrack.Database.RighTrackContract;
  * Use the {@link TodoFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TodoFragment extends Fragment {
+
+
+
+public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -113,16 +116,20 @@ public class TodoFragment extends Fragment {
         // handle item selection
         switch (item.getItemId()) {
             case R.id.action_add_todo:
-                mTodoDialogAdd = new TodoDialogAdd();
-                mTodoDialogAdd.show(getFragmentManager(), "addtodo");
 
-
+                showTodoDialog();
                 Log.v(LOG_TAG, "Added Todo");
                 mAdapter.notifyDataSetChanged();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showTodoDialog() {
+        mTodoDialogAdd = new TodoDialogAdd();
+        mTodoDialogAdd.setTargetFragment(this, 0);
+        mTodoDialogAdd.show(getFragmentManager(), "addtodo");
     }
 
 
@@ -136,11 +143,8 @@ public class TodoFragment extends Fragment {
         // Get the TextView which will be populated with the Dictionary ContentProvider data.
         mListView = (ListView) rootView.findViewById(R.id.listview_todo);
 
-        // Get the ContentResolver which will send a message to the ContentProvider.
-        ContentResolver resolver = mContext.getContentResolver();
-
-        // Get a Cursor containing all of the rows in the Words table.
-        Cursor cursor = resolver.query(RighTrackContract.TodoEntry.CONTENT_URI, null, null, null, null);
+        // Get a Cursor containing all of the rows in the Todo table.
+        Cursor cursor = mTodoData.getCursor();
 
         // Set the Adapter to fill the standard two_line_list_item layout with data from the Cursor.
         mAdapter = new SimpleCursorAdapter(mContext,
@@ -154,6 +158,30 @@ public class TodoFragment extends Fragment {
         mListView.setAdapter(mAdapter);
 
         return rootView;
+    }
+
+    // The dialog fragment receives a reference to this Activity through the
+    // Fragment.onAttach() callback, which it uses to call the following methods
+    // defined by the NoticeDialogFragment.NoticeDialogListener interface
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+
+        // User touched the dialog's positive button
+        EditText editTextTodo = (EditText) dialog.getDialog().findViewById(R.id.todo);
+        String todo = editTextTodo.getText().toString();
+
+        Log.v(LOG_TAG, "onDialogPositiveClick " + todo);
+
+        mTodoData.addTodo(todo,1,1,1,1);
+
+
+        mAdapter.changeCursor(mTodoData.getCursor());
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
+        // User touched the dialog's negative button
+
     }
 
     @Override

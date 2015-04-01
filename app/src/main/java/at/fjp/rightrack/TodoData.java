@@ -1,5 +1,6 @@
 package at.fjp.rightrack;
 
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
@@ -25,6 +26,8 @@ public class TodoData {
 
         addData();
     }
+
+
 
     private void addData() {
 
@@ -96,6 +99,16 @@ public class TodoData {
 //                        "8) Just start something!"
 //
 //        };
+    }
+
+    Cursor getCursor() {
+        // Get the ContentResolver which will send a message to the ContentProvider.
+        ContentResolver resolver = mContext.getContentResolver();
+
+        // Get a Cursor containing all of the rows in the Todo table.
+        Cursor cursor = resolver.query(RighTrackContract.TodoEntry.CONTENT_URI, null, null, null, null);
+
+        return cursor;
     }
 
     long addTodo(String todo, long priorityId, long recurrenceId, long date, long dueDate) {
