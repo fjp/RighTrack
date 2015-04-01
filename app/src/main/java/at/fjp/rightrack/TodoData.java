@@ -101,11 +101,12 @@ public class TodoData {
 //        };
     }
 
+    // Get a Cursor containing all of the rows in the _Todo table.
     Cursor getCursor() {
         // Get the ContentResolver which will send a message to the ContentProvider.
         ContentResolver resolver = mContext.getContentResolver();
 
-        // Get a Cursor containing all of the rows in the Todo table.
+        // Get a Cursor containing all of the rows in the _Todo table.
         Cursor cursor = resolver.query(RighTrackContract.TodoEntry.CONTENT_URI, null, null, null, null);
 
         return cursor;
@@ -250,5 +251,28 @@ public class TodoData {
                 todoValues,
                 RighTrackContract.TodoEntry.COLUMN_TODO + " = ?",
                 new String[]{oldTodoText});
+    }
+
+    public void deleteTodo(String todo) {
+        // First, check if the priority name exists in the db
+        Cursor todoCursor = mContext.getContentResolver().query(
+                RighTrackContract.TodoEntry.CONTENT_URI,
+                new String[]{RighTrackContract.TodoEntry._ID},
+                RighTrackContract.TodoEntry.COLUMN_TODO + " = ?",
+                new String[]{todo},
+                null);
+
+        if (todoCursor.moveToFirst()) {
+            int todoIdIndex = todoCursor.getColumnIndex(RighTrackContract.TodoEntry._ID);
+            mContext.getContentResolver().delete(
+                    RighTrackContract.TodoEntry.CONTENT_URI,
+                    RighTrackContract.TodoEntry.COLUMN_TODO + " = ?",
+                    new String[]{todo}
+            );
+
+        }
+
+        todoCursor.close();
+        // Wait, that worked?  Yes!
     }
 }
