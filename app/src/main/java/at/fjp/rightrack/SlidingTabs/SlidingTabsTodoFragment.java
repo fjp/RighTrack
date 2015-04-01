@@ -129,7 +129,7 @@ public class SlidingTabsTodoFragment extends Fragment {
 
         @Override
         public int getCount() {
-            return 2;
+            return 4;
         }
 
         @Override
@@ -140,6 +140,12 @@ public class SlidingTabsTodoFragment extends Fragment {
                     fragment = TodoFragment.newInstance(position, mContext);
                     break;
                 case 1:
+                    fragment = TodoFragment.newInstance(position, mContext);
+                    break;
+                case 2:
+                    fragment = TodoFragment.newInstance(position, mContext);
+                    break;
+                case 3:
                     fragment = MotivationFragment.newInstance(position);
                     break;
             }
@@ -163,6 +169,12 @@ public class SlidingTabsTodoFragment extends Fragment {
                     break;
                 case 1:
                     pageTitle = "Others";
+                    break;
+                case 2:
+                    pageTitle = "Monthly";
+                    break;
+                case 3:
+                    pageTitle = "Yearly";
                     break;
             }
             return pageTitle;
