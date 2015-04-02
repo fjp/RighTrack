@@ -2,14 +2,15 @@ package at.fjp.rightrack;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-
-
-
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 
 /**
@@ -18,9 +19,19 @@ import android.view.LayoutInflater;
 public class TodoDialogAdd extends DialogFragment {
     private static final String LOG_TAG = TodoDialogAdd.class.getSimpleName();
 
-    public static TodoDialogAdd newInstance() {
-        TodoDialogAdd dialogUpdate = new TodoDialogAdd();
+    private static final String ARG_PARAM1 = "recurrence";
 
+    private static String[] mRecurrenceStrings;
+    private Spinner mSpinner;
+
+    private Context mContext;
+
+    public static TodoDialogAdd newInstance(String[] recurrence) {
+        TodoDialogAdd dialogUpdate = new TodoDialogAdd();
+        Bundle args = new Bundle();
+        mRecurrenceStrings = recurrence;
+        args.putCharSequenceArray(ARG_PARAM1, mRecurrenceStrings);
+        dialogUpdate.setArguments(args);
         return dialogUpdate;
     }
 
@@ -55,25 +66,9 @@ public class TodoDialogAdd extends DialogFragment {
         }
     }
 
-    /* Override the Fragment.onAttach() method to instantiate the NoticeDialogListener
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        // Verify that the host activity implements the callback interface
-        try {
-            // Instantiate the NoticeDialogListener so we can send events to the host
-            mListener = (NoticeDialogListener) activity;
-        } catch (ClassCastException e) {
-            // The activity doesn't implement the interface, throw exception
-            throw new ClassCastException(activity.toString()
-                    + " must implement NoticeDialogListener");
-        }
-    }
-    */
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
+        mContext = getActivity().getApplicationContext();
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -81,7 +76,8 @@ public class TodoDialogAdd extends DialogFragment {
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        builder.setView(inflater.inflate(R.layout.dialog_todo_add, null));
+        View dialogView = inflater.inflate(R.layout.dialog_todo_add, null);
+        builder.setView(dialogView);
 
         builder.setMessage(R.string.dialog_add_todo)
 
@@ -99,6 +95,17 @@ public class TodoDialogAdd extends DialogFragment {
                         Log.v(LOG_TAG, "NegativeButton");
                     }
                 });
+
+        mSpinner = (Spinner) dialogView.findViewById(R.id.recurrence_spinner);
+
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, mRecurrenceStrings);
+
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        mSpinner.setAdapter(adapter);
+
         // Create the AlertDialog object and return it
         return builder.create();
     }

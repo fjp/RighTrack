@@ -281,10 +281,11 @@ public class TodoData {
         return format.format(date).toString();
     }
 
-    public void updateTodo(String oldTodoText, String newTodoText) {
+    public void updateTodo(String oldTodoText, String newTodoText, long recurrenceId) {
         ContentValues todoValues = new ContentValues();
 
         todoValues.put(RighTrackContract.TodoEntry.COLUMN_TODO, newTodoText);
+        todoValues.put(RighTrackContract.TodoEntry.COLUMN_REC_KEY, recurrenceId);
 
         mContext.getContentResolver().update(
                 RighTrackContract.TodoEntry.CONTENT_URI,

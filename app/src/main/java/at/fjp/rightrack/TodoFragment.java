@@ -1,12 +1,12 @@
 package at.fjp.rightrack;
 
 import android.app.Activity;
+import android.app.DialogFragment;
+import android.app.Fragment;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.DialogFragment;
-import android.app.Fragment;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Spinner;
 
 import at.fjp.rightrack.Database.RighTrackContract;
 
@@ -132,7 +133,7 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
     }
 
     private void showTodoDialogAdd() {
-        mTodoDialogAdd = TodoDialogAdd.newInstance();
+        mTodoDialogAdd = TodoDialogAdd.newInstance(mTodoData.getRecurrenceArray());
         mTodoDialogAdd.setTargetFragment(this, 0); //todo move to dialog class
         mTodoDialogAdd.show(getFragmentManager(), "addTodo");
     }
@@ -195,15 +196,20 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
     // defined by the NoticeDialogFragment.NoticeDialogListener interface
     @Override
     public void onDialogAddClick(DialogFragment dialog) {
-
         // User touched the dialog's positive button
+
+        // get the new _todo text from EditText
         EditText editTextTodo = (EditText) dialog.getDialog().findViewById(R.id.todo);
         String todo = editTextTodo.getText().toString();
 
-        Log.v(LOG_TAG, "onDialogPositiveClick " + todo);
+        // get the selected recurrence key inside the spinner
+        Spinner spinner = (Spinner) dialog.getDialog().findViewById(R.id.recurrence_spinner);
+        long recurrenceId = spinner.getSelectedItemId() + 1;
 
-        // save new _todo in database
-        mTodoData.addTodo(todo,1,1,1,1);
+        Log.v(LOG_TAG, "onDialogPositiveClick " + todo + " recurrenceId " + recurrenceId);
+
+        // save new _todo in database: _todo, priorityKey, recurrenceKey, date, due_date
+        mTodoData.addTodo(todo,1,recurrenceId,1,1);
 
         // Update the DataSet
         updateDataSet();
@@ -216,13 +222,20 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
     @Override
     public void onDialogUpdateClick(DialogFragment dialog) {
         // User touched the dialog's update button
+
+        // get the new _todo text from EditText
         EditText editTextTodo = (EditText) dialog.getDialog().findViewById(R.id.todo);
         String newTodo = editTextTodo.getText().toString();
 
-        Log.v(LOG_TAG, "onDialogUpdateClick " + "oldTodo: " + mSelectedTodo + " newTodo: " + newTodo);
+        // get the selected recurrence key inside the spinner
+        Spinner spinner = (Spinner) dialog.getDialog().findViewById(R.id.recurrence_spinner);
+        long recurrenceId = spinner.getSelectedItemId() + 1;
+
+
+        Log.v(LOG_TAG, "onDialogUpdateClick " + "oldTodo: " + mSelectedTodo + " newTodo: " + newTodo + " recurrenceId " + recurrenceId);
 
         // save new _todo in database
-        mTodoData.updateTodo(mSelectedTodo, newTodo);
+        mTodoData.updateTodo(mSelectedTodo, newTodo, recurrenceId);
 
         // Update the DataSet
         updateDataSet();
