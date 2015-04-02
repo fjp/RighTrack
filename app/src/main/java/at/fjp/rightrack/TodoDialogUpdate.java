@@ -2,30 +2,41 @@ package at.fjp.rightrack;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 
 /**
  * Todo Dialog
  */
 public class TodoDialogUpdate extends DialogFragment {
-    private static final String LOG_TAG = TodoFragment.class.getSimpleName();
-    private static final String ARG_PARAM1 = "param1";
+    private static final String LOG_TAG = TodoDialogUpdate.class.getSimpleName();
+    private static final String ARG_PARAM1 = "currentTodo";
+    private static final String ARG_PARAM2 = "recurrence";
 
     private static String mCurrentTodo;
+    private static String[] mRecurrenceStrings;
+    private Spinner mSpinner;
+
+    private Context mContext;
 
 
-    public static TodoDialogUpdate newInstance(String currentTodo) {
+
+    public static TodoDialogUpdate newInstance(String currentTodo, String[] recurrence) {
         TodoDialogUpdate dialogUpdate = new TodoDialogUpdate();
         Bundle args = new Bundle();
         mCurrentTodo = currentTodo;
+        mRecurrenceStrings = recurrence;
         args.putString(ARG_PARAM1, mCurrentTodo);
+        args.putCharSequenceArray(ARG_PARAM2, mRecurrenceStrings);
         dialogUpdate.setArguments(args);
         return dialogUpdate;
     }
@@ -63,7 +74,7 @@ public class TodoDialogUpdate extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
+        mContext = getActivity().getApplicationContext();
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
@@ -96,13 +107,25 @@ public class TodoDialogUpdate extends DialogFragment {
 
 
 
+
+
+        mSpinner = (Spinner) dialogView.findViewById(R.id.recurrence_spinner);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(mContext, android.R.layout.simple_spinner_item, mRecurrenceStrings);
+        //ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>()
+
+
+        //.createFromResource(this, R.array.planets_array, android.R.layout.simple_spinner_item);
+
+        // Specify the layout to use when the list of choices appears
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        // Apply the adapter to the spinner
+        mSpinner.setAdapter(adapter);
+
         // Create the AlertDialog object and return it
         return builder.create();
     }
 
-//    @Override
-//    public void onStart() {
-//        EditText editText = (EditText) getDialog().findViewById(R.id.todo);
-//        editText.setText(mCurrentTodo);
-//    }
 }

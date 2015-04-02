@@ -14,10 +14,23 @@
     <string name="action_settings">Settings</string>
     <string name="action_help">Help</string>
 
-    <string name="button_add_todo">Add New Todo</string>
+    <string name="dialog_add_todo">Add Todo</string>
+    <string name="dialog_update_todo">Update Todo</string>
+
+    <string name="dialog_recurrence">Todo</string>
+    <string name="dialog_todo">Recurrence</string>
+
+
+
+    <string name="action_add_todo">Add</string>
+    <string name="action_update_todo">Update</string>
+    <string name="action_cancel_todo">Cancel</string>
+
+    <string name="action_discard_todo">Delete Todo</string>
+    <string name="action_edit_todo">Edit Todo</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="action_add_todo">Add Todo</string>
+
 
 
 </resources>

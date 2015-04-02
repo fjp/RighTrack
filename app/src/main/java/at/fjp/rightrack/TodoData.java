@@ -7,6 +7,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.text.format.Time;
+import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,6 +20,7 @@ import at.fjp.rightrack.Database.RighTrackContract;
 public class TodoData {
 
     private static Context mContext = null;
+    private static final String LOG_TAG = TodoData.class.getSimpleName();
 
     TodoData(Context context) {
 
@@ -27,18 +29,16 @@ public class TodoData {
         addData();
     }
 
-
-
     private void addData() {
 
         long lowPriorityId = addPriority("LOW");
         long middlePriorityId = addPriority("MIDDLE");
         long highPriorityId = addPriority("HIGH");
 
-        long dailyRecurrenceId = addRecurrence("DAILY");
-        long monthlyRecurrenceId = addRecurrence("MONTHLY");
-        long yearlyRecurrenceId = addRecurrence("YEARLY");
-        long Id = addRecurrence("OTHER");
+        long dailyRecurrenceId = addRecurrence("Daily");
+        long othersId = addRecurrence("Others");
+        long monthlyRecurrenceId = addRecurrence("Monthly");
+        long yearlyRecurrenceId = addRecurrence("Yearly");
 
 
         // Since this data is also sent in-order and the first day is always the
@@ -58,7 +58,7 @@ public class TodoData {
         // Cheating to convert this to UTC time, which is what we want anyhow
         long dateTime = dayTime.setJulianDay(julianStartDay);
 
-        // Predefined Todos
+        // Predefined _Todos
         addTodo("min 3l Trinken", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
 
 
@@ -102,7 +102,7 @@ public class TodoData {
     }
 
     // Get a Cursor containing all of the rows in the _Todo table.
-    Cursor getCursor() {
+    Cursor getTodoCursor() {
         // Get the ContentResolver which will send a message to the ContentProvider.
         ContentResolver resolver = mContext.getContentResolver();
 
@@ -111,6 +111,46 @@ public class TodoData {
 
         return cursor;
     }
+
+    // Get a Cursor containing all of the rows in the Recurrence table.
+    Cursor getRecurrenceCursor() {
+        // Get the ContentResolver which will send a message to the ContentProvider.
+        ContentResolver resolver = mContext.getContentResolver();
+
+        // Get a Cursor containing all of the rows in the Recurrence table.
+        Cursor cursor = resolver.query(RighTrackContract.RecurrenceEntry.CONTENT_URI, null, null, null, null);
+
+        return cursor;
+    }
+
+    // Get a Cursor containing all of the rows in the Priority table.
+    Cursor getPriorityCursor() {
+        // Get the ContentResolver which will send a message to the ContentProvider.
+        ContentResolver resolver = mContext.getContentResolver();
+
+        // Get a Cursor containing all of the rows in the Priority table.
+        Cursor cursor = resolver.query(RighTrackContract.PriorityEntry.CONTENT_URI, null, null, null, null);
+
+        return cursor;
+    }
+
+    String[] getRecurrenceArray() {
+        Cursor cursor = getRecurrenceCursor();
+        int count = cursor.getCount();
+        String[] recurrenceStrings = new String[count];
+
+        if (cursor.moveToFirst()) {
+            for (int i = 0; i < count; i++) {
+                int recurrenceIndex = cursor.getColumnIndex(RighTrackContract.RecurrenceEntry.COLUMN_RECURRENCE);
+                String recurrence = cursor.getString(recurrenceIndex);
+                recurrenceStrings[i] = recurrence;
+                cursor.moveToNext();
+                Log.v(LOG_TAG, "getRecurrenceArray " + recurrence);
+            }
+        }
+        return recurrenceStrings;
+    }
+
 
     long addTodo(String todo, long priorityId, long recurrenceId, long date, long dueDate) {
         long todoId;

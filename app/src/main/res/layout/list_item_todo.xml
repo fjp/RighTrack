@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<EditText xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/list_item_todo_edit_text"
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_item_todo"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:minHeight="?android:listPreferredItemHeightSmall"
-    android:inputType="text"
-    android:imeOptions="actionDone"
-    android:background="#00000000" >
+    android:minHeight="?android:listPreferredItemHeightSmall" >
 
-</EditText>
+</TextView>

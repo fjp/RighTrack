@@ -50,16 +50,12 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
     private TodoDialogUpdate mTodoDialogUpdate;
     private String mSelectedTodo;
 
-    // For the SimpleCursorAdapter to match the UserDictionary columns to layout items.
+    // For the SimpleCursorAdapter to match the _Todo columns to layout items.
     private static final String[] COLUMNS_TO_BE_BOUND  = new String[] {
-            RighTrackContract.TodoEntry.COLUMN_TODO,
-            //RighTrackContract.TodoEntry.COLUMN_REC_KEY
+            RighTrackContract.TodoEntry.COLUMN_TODO
     };
 
     private static final int[] LAYOUT_ITEMS_TO_FILL = new int[] {
-            //android.R.id.text1,
-            //android.R.id.text2
-            //R.id.list_item_todo
             android.R.id.text1
     };
 
@@ -142,7 +138,7 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
     }
 
     private void showTodoDialogUpdate(String currentTodo) {
-        mTodoDialogUpdate = TodoDialogUpdate.newInstance(currentTodo);
+        mTodoDialogUpdate = TodoDialogUpdate.newInstance(currentTodo, mTodoData.getRecurrenceArray());
         mTodoDialogUpdate.setTargetFragment(this, 0); //todo move to dialog class
         mTodoDialogUpdate.show(getFragmentManager(), "updateTodo");
     }
@@ -178,7 +174,7 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
         });
 
         // Get a Cursor containing all of the rows in the _Todo table.
-        Cursor cursor = mTodoData.getCursor();
+        Cursor cursor = mTodoData.getTodoCursor();
 
         // Set the Adapter to fill the standard two_line_list_item layout with data from the Cursor.
         mAdapter = new SimpleCursorAdapter(mContext,
@@ -214,7 +210,7 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
     }
 
     private void updateDataSet() {
-        mAdapter.changeCursor(mTodoData.getCursor());
+        mAdapter.changeCursor(mTodoData.getTodoCursor());
     }
 
     @Override

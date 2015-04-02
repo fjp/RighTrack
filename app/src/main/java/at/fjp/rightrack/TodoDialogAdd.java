@@ -16,7 +16,7 @@ import android.view.LayoutInflater;
  * Todo Dialog
  */
 public class TodoDialogAdd extends DialogFragment {
-    private static final String LOG_TAG = TodoFragment.class.getSimpleName();
+    private static final String LOG_TAG = TodoDialogAdd.class.getSimpleName();
 
     public static TodoDialogAdd newInstance() {
         TodoDialogAdd dialogUpdate = new TodoDialogAdd();
