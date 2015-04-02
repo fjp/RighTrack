@@ -17,8 +17,8 @@
     <string name="dialog_add_todo">Add Todo</string>
     <string name="dialog_update_todo">Update Todo</string>
 
-    <string name="dialog_recurrence">Todo</string>
-    <string name="dialog_todo">Recurrence</string>
+    <string name="dialog_todo">Todo</string>
+    <string name="dialog_recurrence">Recurrence</string>
 
 
 
