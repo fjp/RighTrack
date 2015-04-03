@@ -24,7 +24,6 @@ import android.widget.Spinner;
 import at.fjp.rightrack.Database.RighTrackContract;
 
 
-
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -66,6 +65,13 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
 
     private OnFragmentInteractionListener mListener;
 
+
+    public interface UpdateableFragment {
+        public void update();
+    }
+
+    UpdateableFragment mUpdateListener;
+
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -93,10 +99,17 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
             mRecurrenceId = getArguments().getLong(RECURRENCE_ID_PARAM);
         }
 
-        mContext = getActivity().getApplicationContext();
+        mContext = getActivity();
         mTodoData = new TodoData(mContext);
 
         setHasOptionsMenu(true);
+
+        try {
+            mUpdateListener = (UpdateableFragment) getTargetFragment();
+        } catch (ClassCastException e) {
+            throw new ClassCastException("Calling fragment must implement DialogClickListener interface");
+        }
+
     }
 
     /**
@@ -213,7 +226,12 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
     }
 
     private void updateDataSet(long recurrenceId) {
+        mUpdateListener = (UpdateableFragment) getTargetFragment();
+        Log.v(LOG_TAG, "mUpdateListener BUGI " + mUpdateListener);
         mAdapter.changeCursor(mTodoData.getTodoCursor(recurrenceId));
+        if (mUpdateListener != null) {
+            mUpdateListener.update();
+        }
     }
 
     @Override

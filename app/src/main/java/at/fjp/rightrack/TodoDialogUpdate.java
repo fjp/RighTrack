@@ -74,7 +74,7 @@ public class TodoDialogUpdate extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        mContext = getActivity().getApplicationContext();
+        mContext = getActivity();
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 

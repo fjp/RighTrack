@@ -29,7 +29,6 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import at.fjp.rightrack.MindSetFragment;
 import at.fjp.rightrack.R;
 import at.fjp.rightrack.TodoFragment;
 
@@ -38,10 +37,12 @@ import at.fjp.rightrack.TodoFragment;
  * to display a custom {@link android.support.v4.view.ViewPager} title strip which gives continuous feedback to the user
  * when scrolling.
  */
-public class SlidingTabsTodoFragment extends Fragment {
+public class SlidingTabsTodoFragment extends Fragment implements TodoFragment.UpdateableFragment {
 
     static final String LOG_TAG = "SlidingTabsBasicFragment";
     private static final String ARG_PARAM1 = "param1";
+    private Fragment mFragment;
+    private MyAdapter mAdapter;
 
     /**
      * A custom {@link android.support.v4.view.ViewPager} title strip which looks much like Tabs present in Android v4.0 and
@@ -105,7 +106,8 @@ public class SlidingTabsTodoFragment extends Fragment {
         // BEGIN_INCLUDE (setup_viewpager)
         // Get the ViewPager and set it's PagerAdapter so that it can display items
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
-        mViewPager.setAdapter(new MyAdapter(getChildFragmentManager()));
+        mAdapter = new MyAdapter(getChildFragmentManager());
+        mViewPager.setAdapter(mAdapter);
         // END_INCLUDE (setup_viewpager)
 
         // BEGIN_INCLUDE (setup_slidingtablayout)
@@ -121,6 +123,17 @@ public class SlidingTabsTodoFragment extends Fragment {
     // END_INCLUDE (fragment_onviewcreated)
 
 
+    @Override
+    public void update() {
+        //mViewPager.setAdapter(mAdapter);
+        mAdapter.notifyDataSetChanged();
+    }
+
+    private void setFragment() {
+        mFragment.setTargetFragment(this, 0);
+        Log.v(LOG_TAG, "setTargetFragment BUGI");
+    }
+
     public class MyAdapter extends FragmentStatePagerAdapter {
         public MyAdapter(FragmentManager fm) {
             super(fm);
@@ -131,32 +144,33 @@ public class SlidingTabsTodoFragment extends Fragment {
             return 4;
         }
 
+
         @Override
         public Fragment getItem(int position) {
-            Fragment fragment = null;
             // position declares recurrence todo add define recurrence entries to keys
             switch (position) {
                 case 0:
-                    fragment = TodoFragment.newInstance(position + 1);
+                    mFragment = TodoFragment.newInstance(position + 1);
                     break;
                 case 1:
-                    fragment = TodoFragment.newInstance(position + 1);
+                    mFragment = TodoFragment.newInstance(position + 1);
                     break;
                 case 2:
-                    fragment = TodoFragment.newInstance(position + 1);
+                    mFragment = TodoFragment.newInstance(position + 1);
                     break;
                 case 3:
-                    fragment = MindSetFragment.newInstance(position + 1);
+                    mFragment = TodoFragment.newInstance(position + 1);
                     break;
             }
-            Log.v(LOG_TAG, "mRecurrenceId position " + position);
-            return fragment;
+            Log.v(LOG_TAG, "mRecurrenceId position BUGI " + position);
+            setFragment();
+            return mFragment;
         }
 
-        //@Override
-        //public int getItemPosition(Object object) {
-        //    return POSITION_NONE;
-        //}
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
 
         // BEGIN_INCLUDE (pageradapter_getpagetitle)
         /**
