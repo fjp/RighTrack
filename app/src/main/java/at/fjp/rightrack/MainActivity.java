@@ -60,7 +60,7 @@ public class MainActivity extends Activity
                 fragment = HintFragment.newInstance(position + 1);
                 break;
             case 2:
-                fragment = TodoFragment.newInstance(position + 1);
+                fragment = MindSetFragment.newInstance(position + 1);
                 break;
             case 3:
                 fragment = MotivationFragment.newInstance(position + 1);

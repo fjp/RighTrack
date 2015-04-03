@@ -66,11 +66,11 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
     private OnFragmentInteractionListener mListener;
 
 
-    public interface UpdateableFragment {
+    public interface UpdateListener {
         public void update();
     }
 
-    UpdateableFragment mUpdateListener;
+    UpdateListener mUpdateListener;
 
     /**
      * Use this factory method to create a new instance of
@@ -105,7 +105,7 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
         setHasOptionsMenu(true);
 
         try {
-            mUpdateListener = (UpdateableFragment) getTargetFragment();
+            mUpdateListener = (UpdateListener) getFragmentManager().findFragmentByTag("Fragment");
         } catch (ClassCastException e) {
             throw new ClassCastException("Calling fragment must implement DialogClickListener interface");
         }
@@ -226,7 +226,7 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
     }
 
     private void updateDataSet(long recurrenceId) {
-        mUpdateListener = (UpdateableFragment) getFragmentManager().findFragmentByTag("Fragment");
+        mUpdateListener = (UpdateListener) getFragmentManager().findFragmentByTag("Fragment");
         Log.v(LOG_TAG, "mUpdateListener BUGI " + mUpdateListener);
         mAdapter.changeCursor(mTodoData.getTodoCursor(recurrenceId));
         if (mUpdateListener != null) {

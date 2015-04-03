@@ -59,7 +59,28 @@ public class TodoData {
         long dateTime = dayTime.setJulianDay(julianStartDay);
 
         // Predefined _Todos
-        addTodo("min 3l Trinken", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
+        addTodo("Wake up before 9 AM", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
+        addTodo("Make the Bed", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
+        addTodo("Stretch Exercise Run", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
+        addTodo("Shit Shower Shave", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
+        addTodo("Brush Floss Mouthwash", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
+        addTodo("Eat Breakfast", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
+        addTodo("Work", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
+        addTodo("Learn Hobby List", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
+        addTodo("Brush Floss Mouthwash", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
+        addTodo("Eat Lunch", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
+        addTodo("Work", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
+        addTodo("Learn Hobby List", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
+        addTodo("Eat Dinner", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
+        addTodo("Stretch Excercise Run", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
+        addTodo("Shit Shower Shave", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
+        addTodo("Brush Floss Mouthwash", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
+        addTodo("Go to Bed by Midnight", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
+        addTodo("No Porn", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
+        addTodo("No Smoking", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
+        addTodo("No Drinking", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
+        addTodo("No Sugar", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
+        addTodo("Drink 3l min", highPriorityId, dailyRecurrenceId, dateTime, dateTime);
 
 
         // Create some dummy data for the ListView.  Here's a sample weekly forecast
@@ -125,7 +146,6 @@ public class TodoData {
 
         // Get a Cursor containing all of the rows in the Recurrence table.
         Cursor cursor = resolver.query(RighTrackContract.RecurrenceEntry.CONTENT_URI, null, null, null, null);
-
         return cursor;
     }
 
@@ -154,6 +174,7 @@ public class TodoData {
                 Log.v(LOG_TAG, "getRecurrenceArray " + recurrence);
             }
         }
+        cursor.close();
         return recurrenceStrings;
     }
 

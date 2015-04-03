@@ -37,7 +37,7 @@ import at.fjp.rightrack.TodoFragment;
  * to display a custom {@link android.support.v4.view.ViewPager} title strip which gives continuous feedback to the user
  * when scrolling.
  */
-public class SlidingTabsTodoFragment extends Fragment implements TodoFragment.UpdateableFragment {
+public class SlidingTabsTodoFragment extends Fragment implements TodoFragment.UpdateListener {
 
     static final String LOG_TAG = "SlidingTabsBasicFragment";
     private static final String ARG_PARAM1 = "param1";
@@ -106,7 +106,7 @@ public class SlidingTabsTodoFragment extends Fragment implements TodoFragment.Up
         // BEGIN_INCLUDE (setup_viewpager)
         // Get the ViewPager and set it's PagerAdapter so that it can display items
         mViewPager = (ViewPager) view.findViewById(R.id.viewpager);
-        mAdapter = new MyAdapter(getChildFragmentManager());
+        mAdapter = new MyAdapter(getFragmentManager());
         mViewPager.setAdapter(mAdapter);
         // END_INCLUDE (setup_viewpager)
 
@@ -125,13 +125,7 @@ public class SlidingTabsTodoFragment extends Fragment implements TodoFragment.Up
 
     @Override
     public void update() {
-        //mViewPager.setAdapter(mAdapter);
         mAdapter.notifyDataSetChanged();
-    }
-
-    private void setFragment() {
-        mFragment.setTargetFragment(this, 0);
-        Log.v(LOG_TAG, "setTargetFragment BUGI");
     }
 
     public class MyAdapter extends FragmentStatePagerAdapter {
@@ -163,7 +157,6 @@ public class SlidingTabsTodoFragment extends Fragment implements TodoFragment.Up
                     break;
             }
             Log.v(LOG_TAG, "mRecurrenceId position BUGI " + position);
-            setFragment();
             return mFragment;
         }
 
