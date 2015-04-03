@@ -226,7 +226,7 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
     }
 
     private void updateDataSet(long recurrenceId) {
-        mUpdateListener = (UpdateableFragment) getTargetFragment();
+        mUpdateListener = (UpdateableFragment) getFragmentManager().findFragmentByTag("Fragment");
         Log.v(LOG_TAG, "mUpdateListener BUGI " + mUpdateListener);
         mAdapter.changeCursor(mTodoData.getTodoCursor(recurrenceId));
         if (mUpdateListener != null) {

@@ -70,7 +70,7 @@ public class MainActivity extends Activity
         onSectionAttached(position);
         FragmentManager fragmentManager = this.getFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, fragment)
+                .replace(R.id.container, fragment, "Fragment")
                 .commit();
 
     }
