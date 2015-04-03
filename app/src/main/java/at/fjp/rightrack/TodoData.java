@@ -102,12 +102,18 @@ public class TodoData {
     }
 
     // Get a Cursor containing all of the rows in the _Todo table.
-    Cursor getTodoCursor() {
+    Cursor getTodoCursor(long recurrenceId) {
         // Get the ContentResolver which will send a message to the ContentProvider.
         ContentResolver resolver = mContext.getContentResolver();
 
         // Get a Cursor containing all of the rows in the _Todo table.
-        Cursor cursor = resolver.query(RighTrackContract.TodoEntry.CONTENT_URI, null, null, null, null);
+        Cursor cursor = resolver.query(
+                RighTrackContract.TodoEntry.CONTENT_URI_WITH_RECURRENCE,
+                null,
+                RighTrackContract.TodoEntry.COLUMN_REC_KEY + " = ?",
+                new String[] {Long.toString(recurrenceId)},
+                null
+        );
 
         return cursor;
     }

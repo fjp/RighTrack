@@ -40,13 +40,14 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
  TodoDialogUpdate.TodoDialogClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
+    private static final String RECURRENCE_ID_PARAM = "recurrence_id";
     private static final String LOG_TAG = TodoFragment.class.getSimpleName();
-    private static Context mContext = null;
+    private Context mContext = null;
 
     private ActionMode mActionMode;
 
-    private static TodoData mTodoData;
+    private TodoData mTodoData;
+    private long mRecurrenceId;
     private TodoDialogAdd mTodoDialogAdd;
     private TodoDialogUpdate mTodoDialogUpdate;
     private String mSelectedTodo;
@@ -60,13 +61,8 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
             android.R.id.text1
     };
 
-
     private ListView mListView;
     private SimpleCursorAdapter mAdapter;
-
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
 
     private OnFragmentInteractionListener mListener;
 
@@ -77,14 +73,11 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
      * @return A new instance of fragment TodoFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static TodoFragment newInstance(int sectionNumber, Context context) {
+    public static TodoFragment newInstance(long recurrenceId) {
         TodoFragment fragment = new TodoFragment();
-        mContext = context;
         Bundle args = new Bundle();
-        args.putInt(ARG_PARAM1, sectionNumber);
+        args.putLong(RECURRENCE_ID_PARAM, recurrenceId);
         fragment.setArguments(args);
-        mTodoData = new TodoData(mContext);
-        Log.v(LOG_TAG, "newInstance TodoFragment");
         return fragment;
     }
 
@@ -97,8 +90,11 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            mRecurrenceId = getArguments().getLong(RECURRENCE_ID_PARAM);
         }
+
+        mContext = getActivity().getApplicationContext();
+        mTodoData = new TodoData(mContext);
 
         setHasOptionsMenu(true);
     }
@@ -175,7 +171,7 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
         });
 
         // Get a Cursor containing all of the rows in the _Todo table.
-        Cursor cursor = mTodoData.getTodoCursor();
+        Cursor cursor = mTodoData.getTodoCursor(mRecurrenceId);
 
         // Set the Adapter to fill the standard two_line_list_item layout with data from the Cursor.
         mAdapter = new SimpleCursorAdapter(mContext,
@@ -212,11 +208,12 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
         mTodoData.addTodo(todo,1,recurrenceId,1,1);
 
         // Update the DataSet
-        updateDataSet();
+        updateDataSet(mRecurrenceId);
+        Log.v(LOG_TAG, "mRecurrenceId " + mRecurrenceId);
     }
 
-    private void updateDataSet() {
-        mAdapter.changeCursor(mTodoData.getTodoCursor());
+    private void updateDataSet(long recurrenceId) {
+        mAdapter.changeCursor(mTodoData.getTodoCursor(recurrenceId));
     }
 
     @Override
@@ -238,7 +235,7 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
         mTodoData.updateTodo(mSelectedTodo, newTodo, recurrenceId);
 
         // Update the DataSet
-        updateDataSet();
+        updateDataSet(mRecurrenceId);
     }
 
     @Override
@@ -317,7 +314,7 @@ public class TodoFragment extends Fragment implements TodoDialogAdd.TodoDialogCl
                     return true;
                 case R.id.action_delete_todo:
                     mTodoData.deleteTodo(mSelectedTodo);
-                    updateDataSet();
+                    updateDataSet(mRecurrenceId);
                     mode.finish(); // Action picked, so close the CAB
                     return true;
                 default:

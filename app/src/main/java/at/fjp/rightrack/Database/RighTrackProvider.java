@@ -33,53 +33,11 @@ public class RighTrackProvider extends ContentProvider {
     static final int TODO = 100;
     static final int PRIORITY = 200;
     static final int RECURRENCE = 300;
+    static final int TODO_RECURRENCE = 400;
 
     private static final SQLiteQueryBuilder sTodoQueryBuilder;
 
-    static{
-        sTodoQueryBuilder = new SQLiteQueryBuilder();
 
-        //This is an inner join which looks like
-        //todo
-        // INNER JOIN
-        //  priority
-        // ON
-        //  todo.priority = priority._id
-        // INNER JOIN
-        //  recurrence
-        // ON
-        //  todo.recurrence = recurrence._id
-        sTodoQueryBuilder.setTables(
-                RighTrackContract.TodoEntry.TABLE_NAME + " INNER JOIN " +
-                        RighTrackContract.PriorityEntry.TABLE_NAME +
-                        " ON " + RighTrackContract.TodoEntry.TABLE_NAME +
-                        "." + RighTrackContract.TodoEntry.COLUMN_PRIO_KEY +
-                        " = " + RighTrackContract.PriorityEntry.TABLE_NAME +
-                        "." + RighTrackContract.PriorityEntry._ID  + " INNER JOIN " +
-                        RighTrackContract.RecurrenceEntry.TABLE_NAME +
-                        " ON " + RighTrackContract.TodoEntry.TABLE_NAME +
-                        "." + RighTrackContract.TodoEntry.COLUMN_REC_KEY +
-                        " = " + RighTrackContract.RecurrenceEntry.TABLE_NAME +
-                        "." + RighTrackContract.RecurrenceEntry._ID);
-    }
-
-    private Cursor getTodo(Uri uri, String[] projection, String sortOrder) {
-        String locationSetting = RighTrackContract.TodoEntry.getPriorityLevelFromUri(uri);
-        long startDate = RighTrackContract.TodoEntry.getStartDateFromUri(uri);
-
-        String[] selectionArgs;
-        String selection;
-
-
-        return sTodoQueryBuilder.query(mOpenHelper.getReadableDatabase(),
-                projection,
-                null, // selection
-                null, // selectionArgs
-                null,
-                null,
-                sortOrder
-        );
-    }
 
     /*
         Students: Here is where you need to create the UriMatcher. This UriMatcher will
@@ -105,6 +63,8 @@ public class RighTrackProvider extends ContentProvider {
         matcher.addURI(authority, RighTrackContract.PATH_PRIORITY, PRIORITY);
 
         matcher.addURI(authority, RighTrackContract.PATH_RECURRENCE, RECURRENCE);
+
+        matcher.addURI(authority, RighTrackContract.PATH_TODO_RECURRENCE, TODO_RECURRENCE);
         return matcher;
     }
 
@@ -141,6 +101,33 @@ public class RighTrackProvider extends ContentProvider {
         }
     }
 
+    static{
+        sTodoQueryBuilder = new SQLiteQueryBuilder();
+
+        //This is an inner join which looks like
+        //todo
+        // INNER JOIN
+        //  priority
+        // ON
+        //  todo.priority = priority._id
+        // INNER JOIN
+        //  recurrence
+        // ON
+        //  todo.recurrence = recurrence._id
+        sTodoQueryBuilder.setTables(
+                RighTrackContract.TodoEntry.TABLE_NAME + " INNER JOIN " +
+                        RighTrackContract.PriorityEntry.TABLE_NAME +
+                        " ON " + RighTrackContract.TodoEntry.TABLE_NAME +
+                        "." + RighTrackContract.TodoEntry.COLUMN_PRIO_KEY +
+                        " = " + RighTrackContract.PriorityEntry.TABLE_NAME +
+                        "." + RighTrackContract.PriorityEntry._ID  + " INNER JOIN " +
+                        RighTrackContract.RecurrenceEntry.TABLE_NAME +
+                        " ON " + RighTrackContract.TodoEntry.TABLE_NAME +
+                        "." + RighTrackContract.TodoEntry.COLUMN_REC_KEY +
+                        " = " + RighTrackContract.RecurrenceEntry.TABLE_NAME +
+                        "." + RighTrackContract.RecurrenceEntry._ID);
+    }
+
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
                         String sortOrder) {
@@ -148,13 +135,24 @@ public class RighTrackProvider extends ContentProvider {
         // and query the database accordingly.
         Cursor retCursor;
         switch (sUriMatcher.match(uri)) {
-            // "todo"
+            // "_todo"
             case TODO: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         RighTrackContract.TodoEntry.TABLE_NAME,
                         projection,
                         selection,
                         selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+            }
+            case TODO_RECURRENCE: {
+                retCursor = sTodoQueryBuilder.query(mOpenHelper.getReadableDatabase(),
+                        projection,
+                        selection, // selection
+                        selectionArgs, // selectionArgs
                         null,
                         null,
                         sortOrder
@@ -214,6 +212,16 @@ public class RighTrackProvider extends ContentProvider {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 break;
             }
+            case TODO_RECURRENCE: {
+                normalizeDate(values);
+                long _id = db.insert(RighTrackContract.TodoEntry.TABLE_NAME, null, values);
+                if ( _id > 0 )
+                    returnUri = RighTrackContract.TodoEntry.buildTodoRecurrenceUri(_id);
+                else
+                    throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
+
             case PRIORITY: {
                 long _id = db.insert(RighTrackContract.PriorityEntry.TABLE_NAME, null, values);
                 if ( _id > 0 )

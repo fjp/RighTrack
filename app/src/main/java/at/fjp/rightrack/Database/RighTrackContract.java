@@ -29,6 +29,7 @@ public class RighTrackContract {
     public static final String PATH_TODO = "todo";
     public static final String PATH_PRIORITY = "priority";
     public static final String PATH_RECURRENCE = "recurrence";
+    public static final String PATH_TODO_RECURRENCE = "todo_recurrence";
 
     // To make it easy to query for the exact date, we normalize all dates that go into
     // the database to the start of the the Julian day at UTC.
@@ -108,6 +109,10 @@ public class RighTrackContract {
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_TODO).build();
 
+        public static final Uri CONTENT_URI_WITH_RECURRENCE =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_TODO_RECURRENCE).build();
+
+
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_TODO;
         public static final String CONTENT_ITEM_TYPE =
@@ -116,6 +121,10 @@ public class RighTrackContract {
 
         public static Uri buildTodoUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static Uri buildTodoRecurrenceUri(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI_WITH_RECURRENCE, id);
         }
 
         /*

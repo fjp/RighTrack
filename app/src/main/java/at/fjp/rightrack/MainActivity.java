@@ -54,13 +54,13 @@ public class MainActivity extends Activity
         Fragment fragment = null;
         switch (position) {
             case 0:
-                fragment = SlidingTabsTodoFragment.newInstance(position + 1, this);
+                fragment = SlidingTabsTodoFragment.newInstance(position + 1);
                 break;
             case 1:
                 fragment = HintFragment.newInstance(position + 1);
                 break;
             case 2:
-                fragment = SlidingTabsTodoFragment.newInstance(position + 1, this);
+                fragment = TodoFragment.newInstance(position + 1);
                 break;
             case 3:
                 fragment = MotivationFragment.newInstance(position + 1);
